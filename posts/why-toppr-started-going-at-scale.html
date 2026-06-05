@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Toppr started Go(ing) at scale — Sravan Turibilli</title>
+  <meta name="description" content="How Toppr Answr migrated from Python to Go, cut compute from ~300 cores to 4, and hit p95 latency of 10ms.">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="canonical" href="https://sravanturbo.github.io/posts/why-toppr-started-going-at-scale.html">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="site-name" href="/">Sravan Turibilli</a>
+  <nav>
+    <a href="/writing.html">Writing</a>
+    <a href="/work.html">Work</a>
+    <a href="/about.html">About</a>
+  </nav>
+</header>
+
+<main>
+  <a class="back" href="/writing.html">All posts</a>
+
+  <div class="post-header">
+    <h1>Why Toppr started Go(ing) at scale</h1>
+    <div class="post-meta">
+      <span>2021</span>
+      <span>golang · migration · scale</span>
+      <span>Originally published on the <a href="https://medium.com/toppr-blog/why-toppr-started-go-ing-at-scale-221de7074a02">Toppr Engineering Blog</a> · co-authored with Santhosh Reddy</span>
+    </div>
+  </div>
+
+  <div class="prose">
+
+    <h2>Introduction</h2>
+
+    <p>
+      Over eight years, Toppr built its products using Django, a Python web framework,
+      chosen for its convention-driven development speed. That served us well — until
+      the pandemic hit and traffic to Toppr Answr, our homework help platform, grew
+      faster than the architecture could absorb. This is the story of how we diagnosed
+      what was actually wrong and why Go was the right answer.
+    </p>
+
+    <h2>Why Python, and why it stopped working</h2>
+
+    <p>
+      Python earned its place at Toppr for good reasons: it accelerated feature
+      shipping, the ORM reduced boilerplate, it attracted talented developers, and the
+      syntax was expressive enough that engineers could move between services without
+      a steep ramp. For most of the company's history, those advantages outweighed
+      anything else on the table.
+    </p>
+
+    <p>
+      Toppr Answr is an SEO-driven Q&amp;A platform with three hard SLA requirements:
+      low latency, high throughput, and high availability. Search engine bots generate
+      unpredictable traffic spikes. Any performance hiccup doesn't just affect users —
+      it affects rankings, which affects traffic, which compounds. When Answr's traffic
+      grew significantly over six to eight months during the pandemic, those
+      requirements stopped being theoretical.
+    </p>
+
+    <p>
+      The core problem was the Global Interpreter Lock. The GIL restricts Python to
+      one thread holding the interpreter lock at a time, making multithreading
+      effectively single-threaded under CPU load. In theory, GIL doesn't impact
+      I/O-bound applications. In practice, I/O-bound apps spend more time on CPU
+      than the theory suggests — even simple CRUD operations spend roughly 20% of
+      execution time on CPU-bound Python code, and that's where GIL contention bites.
+    </p>
+
+    <p>
+      The response to GIL is to use multiple processes instead of threads. Multiple
+      processes work, but they carry significant memory overhead. Each process is a
+      full Python interpreter with its own heap. Memory constraints per machine meant
+      we couldn't fully utilise available CPU, so we were spinning up additional
+      machines to absorb traffic spikes — and every additional machine cascaded costs
+      to upstream services and data sources. We were paying for capacity we couldn't
+      actually use.
+    </p>
+
+    <h2>What we needed in a replacement</h2>
+
+    <p>
+      Before evaluating anything, we wrote down what the replacement runtime actually
+      had to have:
+    </p>
+
+    <ul>
+      <li>Static typing — eliminate the class of bugs you only find at runtime</li>
+      <li>Superior CPU utilisation compared to Python's multi-process model</li>
+      <li>Lower memory footprint per unit of work</li>
+      <li>First-class concurrency support</li>
+      <li>Shallow learning curve — we needed the team to be productive quickly</li>
+      <li>Strong community and ecosystem</li>
+      <li>Painless cross-architecture deployment</li>
+    </ul>
+
+    <h2>Why Go</h2>
+
+    <p>
+      Go sits at an unusual intersection: it has enough low-level control to be fast
+      and efficient, and enough high-level ergonomics that engineers can be productive
+      in days rather than weeks. That combination is rarer than it sounds.
+    </p>
+
+    <p>
+      The concurrency model was the decisive factor. A goroutine is a lightweight
+      user-level thread managed by the Go runtime — cheap to create, cheap to
+      maintain, and multiplexed onto kernel threads by a scheduler that understands
+      your workload. The scheduler uses per-core run queues, steals work across
+      cores to balance load, and preempts long-running goroutines. The net effect is
+      that Go handles thousands of concurrent operations without the memory overhead
+      of the equivalent thread-per-request model.
+    </p>
+
+    <p>
+      The philosophy behind Go's concurrency is worth naming explicitly: <em>don't
+      communicate by sharing memory; share memory by communicating</em>. Channels
+      make the flow of data between goroutines explicit, which makes the class of
+      locking bugs that plague shared-memory concurrency much harder to write.
+    </p>
+
+    <p>
+      The practical advantages stacked up too: cross-compilation generates
+      architecture-specific binaries easily, the language specification is 50 pages
+      (you can read it in an afternoon), it's a mature Google-backed open-source
+      project, and REST service development is well-supported. Benchmarks against our
+      Python baseline showed Go achieving at least 10x better throughput on equivalent
+      hardware.
+    </p>
+
+    <h2>Migration strategy</h2>
+
+    <p>
+      Answr is read-heavy. The migration prioritised read APIs first — highest impact,
+      clearest ROI, and the path that freed resources fastest while giving the team
+      time to build fluency in the new stack. We didn't do a big-bang rewrite. We
+      migrated service by service, kept both versions running in parallel during
+      transitions, and used the headroom each migration created to fund the next one.
+    </p>
+
+    <h2>What we learned along the way</h2>
+
+    <p>
+      <strong>Framework.</strong> Gin proved to be the right HTTP framework for us —
+      high performance, aligned with Go's simplicity philosophy, and well-matched to
+      the kind of REST services we were building.
+    </p>
+
+    <p>
+      <strong>Monitoring.</strong> DataDog gave us production visibility we needed
+      during the migration. Apache Bench and Go's built-in <code>pprof</code> profiler
+      were essential for identifying and fixing memory leaks and goroutine leaks —
+      flame graphs in particular made slow code paths obvious in a way that logs alone
+      can't.
+    </p>
+
+    <p>
+      <strong>Dependency injection.</strong> Uber's Fx framework let us manage
+      cross-cutting concerns as injectable dependencies rather than globals or
+      init-time side effects. Less code rewriting, cleaner service boundaries,
+      better developer experience as the team grew.
+    </p>
+
+    <p>
+      <strong>Developer experience.</strong> Go's imperative style combined with
+      CSP-style concurrency via channels turned out to be immediately approachable
+      for engineers coming from a Python background. The learning curve we'd
+      anticipated was shorter than expected.
+    </p>
+
+    <h2>Results</h2>
+
+    <p>
+      The numbers were unambiguous:
+    </p>
+
+    <ul>
+      <li>p95 latency: ~10ms</li>
+      <li>p99 latency: ~30ms</li>
+      <li>Peak throughput: ~1,000 RPS behind CDN</li>
+      <li>Compute: from ~300 cores down to 4 cores running on 2 dual-core machines</li>
+      <li>Downtime: significantly reduced</li>
+    </ul>
+
+    <p>
+      Toppr Answr reached #2 in India and #15 globally in education sector internet
+      traffic. Our DevOps engineer put it plainly: "We've seen a significant reduction
+      in server costs, ease of operation increased, better resource utilisation helped
+      shave costs across the stack."
+    </p>
+
+    <p>
+      Go is now the default technology choice for most teams at Toppr. We didn't
+      migrate because Go was fashionable — we migrated because we had a specific,
+      diagnosed problem with a specific root cause, and Go addressed it directly.
+      That's the only migration worth doing.
+    </p>
+
+  </div>
+</main>
+
+<footer>
+  <a href="mailto:sra1turibilli@gmail.com">sra1turibilli@gmail.com</a>
+  &ensp;·&ensp;
+  <a href="https://github.com/SravanTurbo">GitHub</a>
+</footer>
+
+</body>
+</html>
