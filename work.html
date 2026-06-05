@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Work — Sravan Turibilli</title>
-  <meta name="description" content="Career history — Sravan Turibilli, principal backend engineer.">
+  <meta name="description" content="Ten years of building backend systems — what each period was really about.">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="canonical" href="https://sravanturbo.github.io/work.html">
 </head>
@@ -15,211 +15,95 @@
   <nav>
     <a href="/writing.html">Writing</a>
     <a href="/work.html" class="active">Work</a>
-    <a href="/about.html">About</a>
   </nav>
 </header>
 
 <main>
   <div class="page-header">
     <h1>Work</h1>
-    <p class="subtitle">Ten years of building backend systems. What I built, why, and what I learned.</p>
   </div>
 
-  <div class="prose">
+  <div class="timeline">
 
-    <h2>Now</h2>
+    <div class="timeline-entry">
+      <div class="timeline-meta">
+        <span class="timeline-company">GoHeartBeat</span>
+        <span class="timeline-period">2024 – Present</span>
+      </div>
+      <p class="timeline-summary">
+        Built everything from nothing. Learned what not to build.
+        Applied ten years of wrong turns into one product.
+      </p>
+      <ul class="timeline-links">
+        <li><a href="/posts/goheartbeat-fivetran.html" class="post-link-coming">Why we didn't use Fivetran — or Airbyte — or Temporal <span class="coming-soon">coming</span></a></li>
+        <li><a href="/posts/goheartbeat-echo.html" class="post-link-coming">Building Echo: the token cost problem nobody warned me about <span class="coming-soon">coming</span></a></li>
+      </ul>
+    </div>
 
-    <p>
-      Open to principal or staff backend roles where the engineering problems are
-      genuinely load-bearing — where the wrong infrastructure decision would materially
-      limit what the product can do. Hyderabad-based, open to remote.
-      <a href="mailto:sra1turibilli@gmail.com">Get in touch.</a>
-    </p>
+    <div class="timeline-entry">
+      <div class="timeline-meta">
+        <span class="timeline-company">Whitehat Jr.</span>
+        <span class="timeline-period">2022 – 2024</span>
+      </div>
+      <p class="timeline-summary">
+        Walked into a crisis. Made a deliberate choice to listen before fixing.
+        Found one root cause underneath ninety percent of the noise.
+      </p>
+      <ul class="timeline-links">
+        <li><a href="/posts/whitehat-fire.html" class="post-link-coming">The fire I walked into, and why I didn't fight it immediately <span class="coming-soon">coming</span></a></li>
+      </ul>
+    </div>
 
-    <hr>
+    <div class="timeline-entry">
+      <div class="timeline-meta">
+        <span class="timeline-company">Toppr</span>
+        <span class="timeline-period">2019 – 2022</span>
+      </div>
+      <p class="timeline-summary">
+        Scale teaches you engineering faster than anything else.
+        I learned most of what I know about systems here — usually by being wrong first.
+      </p>
+      <ul class="timeline-links">
+        <li><a href="/posts/answr-scale.html" class="post-link-coming">How Answr went from a script to 4M sessions a day — and almost broke <span class="coming-soon">coming</span></a></li>
+        <li><a href="/posts/why-toppr-started-going-at-scale.html">Why Toppr started Go(ing) at scale</a></li>
+      </ul>
+    </div>
 
-    <h3>GoHeartBeat &mdash; Founding Engineer &middot; Sept 2024–Present</h3>
+    <div class="timeline-entry">
+      <div class="timeline-meta">
+        <span class="timeline-company">Transin Logistics</span>
+        <span class="timeline-period">2017 – 2019</span>
+      </div>
+      <p class="timeline-summary">
+        Joined as an analyst, hit a wall, taught myself to code past it.
+        Learned that the user standing in front of the tool matters more than the tool.
+      </p>
+      <ul class="timeline-links">
+        <li><a href="/posts/transin-quickbooks.html" class="post-link-coming">Why the QuickBooks integration exposed our data reality <span class="coming-soon">coming</span></a></li>
+        <li><a href="/posts/transin-microservices.html" class="post-link-coming">We built microservices. We didn't need them. <span class="coming-soon">coming</span></a></li>
+      </ul>
+    </div>
 
-    <p>
-      GoHeartBeat is a B2B SaaS analytics platform for startups — the idea being that
-      founders shouldn't have to route every data question through analysts and wait days
-      for a stale number. The founders were the ex-Toppr CEO and CTO. I knew how they
-      built. I joined at roughly half my prior salary in exchange for equity and the
-      chance to start from nothing.
-    </p>
-
-    <p>
-      There was no codebase, no infrastructure, no company. I designed the full stack —
-      Golang and Python services on AWS EKS, Postgres, ClickHouse as the analytical layer
-      for clients without a warehouse, CubeJS as a semantic layer with pre-aggregation
-      for sub-250ms query performance — and shipped a working version to the first pilot
-      client in three months. Production-ready in six.
-    </p>
-
-    <p>
-      The most consequential decision was one nobody forced. Enterprise and finance clients
-      have strict data residency requirements: their data cannot route through a third
-      party's infrastructure. Standard SaaS architecture fails that test entirely. Before
-      any client raised the constraint, I designed a compliance-first multi-tenant model
-      where ClickHouse and CubeJS deploy inside the client's own AWS account, and our
-      application layer calls their CubeJS for pre-aggregated results only — raw data
-      never leaves their environment. When the first enterprise client arrived with that
-      exact requirement, the architecture was already in place. That deal closed at
-      ₹15L/month. A conventional setup would have lost it.
-    </p>
-
-    <p>
-      The same constraint made every off-the-shelf data pipeline tool unworkable —
-      Fivetran and Airbyte both route data through their own infrastructure, which
-      violated the residency model. Neither had connectors for the Indian SaaS APIs
-      we needed. I designed a three-part replacement: a central orchestrator that manages
-      schedules, credentials, and job dispatch without ever touching client data; a
-      connector library where integrations are reusable Python classes rather than DAGs;
-      and a lightweight agent that runs inside the client's AWS account, pulls jobs
-      outbound, executes connectors locally, and writes to their ClickHouse. Purely
-      outbound — no inbound connections into the client VPC.
-    </p>
-
-    <p>
-      Later I built Echo, a conversational analytics layer that translates natural-language
-      questions into CubeJS queries and streams results back as prose. The non-trivial
-      part was token cost: a CubeJS schema for a single client runs to 200K+ characters.
-      Injecting it on every LLM call was prohibitive. Schema-aware session management —
-      injecting once at session start and reusing across turns — cut token usage by 78%.
-      The platform grew to six clients and contributed to a $1M fundraise. I'm leaving
-      because equity terms agreed at joining didn't materialise, not because the product
-      is in trouble.
-    </p>
-
-    <h3>Whitehat Jr. &mdash; Principal Software Engineer &middot; Aug 2022–Aug 2024</h3>
-
-    <p>
-      Whitehat Jr. ran live 1:1 coding classes for kids, had been acquired by Byju's,
-      and by the time I arrived had been largely hollowed out. The original engineering
-      team had scattered post-acquisition. What remained was about fifteen engineers,
-      mostly junior, no senior technical direction, and a product that was generating
-      public incidents regularly. The Toppr CTO had been handed operational
-      responsibility for the product and pulled me in — not through a job post, but
-      because of trust built at Toppr.
-    </p>
-
-    <p>
-      I made a deliberate choice not to walk in as the leader. I told the team I wanted
-      to work alongside them as a developer first — understand the codebase, experience
-      the incidents, see the reality before taking charge. The last senior engineer with
-      institutional knowledge was days from leaving his notice period. I extracted
-      everything I could from him, established back-channels with ex-Whitehat engineers
-      now at Byju's central, and worked through the immediate fires: OTP API abuse
-      hammering Twilio costs, a communications engine sending ten-plus reminders per
-      class with many never delivered, class join failures caused by slot logic producing
-      invalid states. For join failures, the triage model was: issue a fallback video link
-      immediately to keep the class running, then diagnose the root cause in parallel.
-    </p>
-
-    <p>
-      Once the acute fires were contained, one incident pattern remained. The same failure,
-      at the same times, every day — peak class hours. The assumption in the team was that
-      there were more bugs to find. The reality: infrastructure was scaling too late.
-      Auto-scaling was reactive, triggered when thresholds were breached, by which point
-      load had already hit. New instances took two to three minutes to warm up. During
-      those minutes: classes failing, teachers and students dropping. The complexity wasn't
-      obvious — classes from the current hour extend into the next, students join five
-      minutes early, and India and Brazil have overlapping peak profiles that both had to
-      be accounted for. I analysed a month of historical class data, derived the actual
-      overlap and early-join factors, and rebuilt scaling to look ahead at scheduled load
-      rather than react to current load. Instances were warm before peak arrived.
-      That one change eliminated 90% of all platform incidents.
-    </p>
-
-    <p>
-      In parallel I ran cost reduction across three tracks: migrated logging from Datadog
-      to Coralogix via OpenTelemetry with a two-week retention policy (saving ~$60K/month),
-      applied a systematic infrastructure audit to right-size AWS resources (~$60K/month),
-      and cleaned up the communications engine's most expensive duplicate sends. Total
-      confirmed savings: $120K+/month. I then led the AWS to GCP migration across
-      Byju's group, completing 70% of critical services, and represented both Whitehat Jr.
-      and Toppr in group-level CTO infrastructure reviews. The product turned profitable.
-      The parent company collapsed at the holding company level — unrelated to product
-      performance — and after months of salary delays I moved on.
-    </p>
-
-    <h3>Toppr &mdash; Tech Lead → Principal Engineer &middot; 2019–2022</h3>
-
-    <p>
-      Toppr was an edtech platform for exam preparation — large user base, competitive
-      SEO traffic, enormous question-and-answer content library. I joined as Tech Lead to
-      build Toppr Answr, an SEO-driven Q&amp;A platform. At the time it existed as a script.
-      Within a year it was serving 4 million sessions per day and ranked as India's
-      number-one education traffic platform and second globally in its category.
-    </p>
-
-    <p>
-      The first scaling crisis came when traffic grew faster than the architecture could
-      handle and the team couldn't identify why. I diagnosed it as a Python GIL and WSGI
-      threading bottleneck — the kind of problem that looks like many different symptoms
-      depending on where you look. The fix wasn't a patch: I made the case for migrating
-      Answr's backend to Go, led the migration, and watched compute drop from roughly 300
-      cores to 30 — about a 90% reduction — with p95 latency settling near 10ms. I
-      co-wrote a detailed post-mortem and migration writeup that went into Toppr's
-      engineering blog; it became the reference for how we handled language migrations
-      across the org.
-    </p>
-
-    <p>
-      Later I led a platform-wide AWS cost audit — not as a cost-cutting exercise, but as
-      a systematic ROI review: identify the biggest line items, evaluate utilisation,
-      right-size or eliminate. The audit saved $80K/month. I published the framework
-      internally so other teams could run the same exercise. I was promoted to Principal
-      Engineer. Toppr's traffic growth — Answr was a major driver — made the company an
-      attractive acquisition. Byju's acquired Toppr in 2021.
-    </p>
-
-    <h3>Transin Logistics &mdash; Analyst → Backend Engineer &middot; 2017–2019</h3>
-
-    <p>
-      Transin was a logistics company moving freight across India. I joined as an analyst,
-      hit a wall on the original mandate, and taught myself Node.js and backend development
-      to build past it. The first problem I solved was accounting: every transaction
-      generated manual reconciliation work downstream. I built an event-driven pipeline —
-      DynamoDB Streams into Kafka into a finance service that wrote directly to
-      QuickBooks — that eliminated 90% of the manual accounting load.
-    </p>
-
-    <p>
-      The second problem required leaving the office. Field agents weren't entering data
-      into the internal tool. The instinct in the team was that it was a compliance
-      problem. I went on-ground to a branch to watch how agents actually worked. The
-      tool gave them nothing back — no confirmation, no visibility, no reason to
-      trust it. I built role-based dashboards that gave agents real-time feedback on
-      their own data. Adoption followed. That pattern — diagnose before prescribing,
-      get close to the actual user — has shaped how I approach product engineering since.
-      I also built TruckForce, a mobile-first field operations app. Company revenue
-      grew from ₹70Cr to ₹150Cr during this period.
-    </p>
-
-    <h3>Eclerx &mdash; Software Engineer &middot; 2015–2017</h3>
-
-    <p>
-      Eclerx is a financial services BPO. My first job. I joined as a fresh hire and built
-      a centralised security monitoring pipeline across 9,000 machines — ELK stack, Hadoop,
-      Tableau — from scratch. The key decision was introducing Kafka as a durability buffer
-      between the log collectors and Elasticsearch. We were losing logs whenever Elasticsearch
-      nodes went down, and the retry logic at the edges wasn't reliable. Nobody asked for
-      Kafka specifically; it was the right answer to the problem. It held. I won a Star
-      Performer award and presented the architecture at an industry conference. I left
-      because the feedback loops in a 9,000-person org were too slow — I wanted to build
-      things where users could tell you the same day whether it worked.
-    </p>
-
-    <hr>
-
-    <h2>Education</h2>
-
-    <p>
-      B.Tech, Chemical Engineering (minor in Computer Science) — IIT Gandhinagar, 2015.
-    </p>
+    <div class="timeline-entry">
+      <div class="timeline-meta">
+        <span class="timeline-company">Eclerx</span>
+        <span class="timeline-period">2015 – 2017</span>
+      </div>
+      <p class="timeline-summary">
+        My first production system. I didn't know distributed systems was a field —
+        I just knew logs were disappearing and I had to stop it.
+      </p>
+      <ul class="timeline-links">
+        <li><a href="/posts/elk-kafka.html" class="post-link-coming">The ELK failure that introduced me to distributed systems <span class="coming-soon">coming</span></a></li>
+      </ul>
+    </div>
 
   </div>
+
+  <div class="timeline-footer">
+    <p>B.Tech, Chemical Engineering — IIT Gandhinagar, 2015.</p>
+  </div>
+
 </main>
 
 <footer>

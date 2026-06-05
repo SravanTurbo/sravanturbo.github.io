@@ -243,3 +243,137 @@ footer {
   .post-list li { grid-template-columns: 1fr; gap: 0.1rem; }
   .post-date { font-size: 0.78rem; }
 }
+
+/* ─── Timeline (work.html) ─────────────────────────────────────── */
+
+.timeline {
+  margin-top: 2.5rem;
+}
+
+.timeline-entry {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.timeline-entry:last-of-type {
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.timeline-company {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.timeline-period {
+  font-size: 0.82rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.timeline-summary {
+  margin: 0 0 1rem 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  max-width: 52ch;
+}
+
+.timeline-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.timeline-links a {
+  font-size: 0.9rem;
+  color: var(--text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timeline-links a:hover {
+  color: var(--accent);
+}
+
+.post-link-coming {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+
+.coming-soon {
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  padding: 0.1em 0.45em;
+  border-radius: 3px;
+}
+
+.timeline-footer {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ─── Homepage ─────────────────────────────────────────────────── */
+
+.home-intro {
+  margin-bottom: 3.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.home-contact {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 1.5rem;
+}
+
+.home-contact a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.home-contact a:hover {
+  color: var(--text);
+}
+
+/* ─── Post list with hook lines ─────────────────────────────────── */
+
+.post-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.post-hook {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+  font-family: var(--sans);
+}
+
+/* ─── Override post-list grid for hook layout ───────────────────── */
+
+.post-list li {
+  align-items: start;
+  padding: 1rem 0;
+}
