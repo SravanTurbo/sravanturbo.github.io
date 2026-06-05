@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why we stopped using consumer lag as a health signal — Sravan Turibilli</title>
+  <meta name="description" content="Consumer lag feels like an obvious health metric for Kafka-backed services. It isn't. Here's what we learned the hard way.">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="canonical" href="https://sravanturbo.github.io/posts/kafka-consumer-lag-incident.html">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="site-name" href="/">Sravan Turibilli</a>
+  <nav>
+    <a href="/">Writing</a>
+    <a href="/work.html">Work</a>
+    <a href="/about.html">About</a>
+  </nav>
+</header>
+
+<main>
+  <a class="back" href="/">All posts</a>
+
+  <div class="post-header">
+    <h1>Why we stopped using consumer lag as a health signal</h1>
+    <div class="post-meta">
+      <span>2 June 2026</span>
+      <span>incident · kafka · observability</span>
+    </div>
+  </div>
+
+  <div class="prose">
+
+    <p>
+      For two years our on-call runbook said the same thing: if consumer lag on the
+      ingestion topic crosses 50k messages, page the on-call engineer. It was one of
+      the first alerts we wrote when we moved to Kafka. It fired constantly — sometimes
+      correctly, usually not. We kept tuning the threshold. Eventually we deleted the
+      alert entirely and replaced it with something that actually worked.
+    </p>
+
+    <p>
+      This is the story of why, and what we learned about the difference between a
+      metric that <em>looks</em> like a health signal and one that <em>is</em> a health signal.
+    </p>
+
+    <h2>What we were trying to measure</h2>
+
+    <p>
+      The service in question consumed events from an upstream producer, applied a
+      lightweight enrichment, and wrote results to a downstream database. End-to-end
+      latency mattered: if events sat in the topic for more than a few minutes, a
+      downstream reporting job would miss its SLA window.
+    </p>
+
+    <p>
+      Consumer lag — the difference between the latest offset produced and the last
+      offset committed by our consumer — seemed like the natural proxy for that latency.
+      More lag means the consumer is further behind, which means higher end-to-end
+      latency. Simple.
+    </p>
+
+    <p>
+      The problem is that lag is an <em>inventory</em> measure, not a <em>flow</em> measure. It tells
+      you how many messages are waiting. It doesn't tell you whether the consumer is
+      keeping up, falling behind, or idle because the producer went quiet.
+    </p>
+
+    <h2>The incident that clarified things</h2>
+
+    <p>
+      On a Tuesday evening the alert fired. Lag had climbed from a few hundred to
+      800k messages in about twenty minutes. The on-call engineer — me — woke up,
+      checked the consumer, found it healthy: CPU normal, no errors, processing at
+      its usual rate of roughly 12k messages per second.
+    </p>
+
+    <p>
+      The producer had spiked. A batch job upstream had dumped a backlog of six hours
+      of accumulated events into the topic at once. The consumer was fine. It would
+      catch up in about a minute. The alert was noise.
+    </p>
+
+    <p>
+      That incident was easy to diagnose. What made us finally delete the alert was
+      a different pattern we noticed reviewing the prior six months of pages: nearly
+      half our lag alerts had fired during periods when the <em>producer</em> had spiked,
+      not when the consumer had slowed. The consumer was healthy every time. We were
+      paging engineers to investigate a queue filling up faster than usual, which
+      is not a problem.
+    </p>
+
+    <h2>The fix: measure what you actually care about</h2>
+
+    <p>
+      We wanted to know whether the consumer was keeping up with the producer — not
+      whether lag was high in absolute terms. Those are different questions.
+    </p>
+
+    <p>
+      We replaced the lag threshold alert with two signals:
+    </p>
+
+    <p>
+      <strong>Consumer throughput drop.</strong> Alert if the consumer's message-per-second rate
+      falls more than 40% below its trailing 10-minute average, sustained for 3 minutes.
+      This fires when the consumer slows down. It does not fire when the producer speeds up.
+    </p>
+
+    <p>
+      <strong>End-to-end event age.</strong> We started stamping events with a producer-side
+      timestamp and measuring the age of the oldest uncommitted event in the topic.
+      Alert if any event is older than 8 minutes. This directly measures the latency
+      we actually cared about.
+    </p>
+
+    <p>
+      The second signal required a small schema change and some coordination with the
+      upstream team. It took an extra week. It was worth it. The age alert fires
+      precisely when the downstream SLA is at risk — not before, not on noise.
+    </p>
+
+    <h2>The broader lesson</h2>
+
+    <p>
+      Lag is a useful diagnostic tool. When an alert fires and you're trying to understand
+      what happened, knowing the lag curve helps you reconstruct the timeline. But as an
+      alerting signal it has the wrong shape: it rises during both producer spikes (fine)
+      and consumer slowdowns (not fine), and it gives you no information about actual
+      end-to-end latency because it doesn't know anything about message age.
+    </p>
+
+    <p>
+      The general pattern: if your alert is a count or a queue depth, ask whether you're
+      measuring inventory or flow. Inventory measures go up for many reasons, only some
+      of which require a human. Flow measures — throughput, age, error rate — tend to
+      change only when something is actually wrong.
+    </p>
+
+    <p>
+      We still expose consumer lag on our dashboards. It's one of the first things I look
+      at during an incident. It just doesn't wake anyone up anymore.
+    </p>
+
+  </div>
+</main>
+
+<footer>
+  <a href="mailto:sra1turibilli@gmail.com">sra1turibilli@gmail.com</a>
+  &ensp;·&ensp;
+  <a href="https://github.com/sravanturbo">GitHub</a>
+</footer>
+
+</body>
+</html>
