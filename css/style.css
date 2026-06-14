@@ -4,7 +4,7 @@
   --text:    #1a1a1a;
   --muted:   #666;
   --border:  #e0e0e0;
-  --bg:      #fafafa;
+  --bg:      #ffffff;
   --accent:  #1a1a1a;
   --max:     680px;
   --serif:   Georgia, "Times New Roman", serif;
@@ -30,8 +30,8 @@ body {
   margin: 0 auto;
   padding: 3rem 1.5rem 2rem;
   display: flex;
-  align-items: baseline;
-  gap: 2rem;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .site-name {
@@ -44,6 +44,7 @@ body {
 
 nav {
   display: flex;
+  align-items: center;
   gap: 1.5rem;
 }
 
@@ -55,6 +56,34 @@ nav a {
 
 nav a:hover,
 nav a.active { color: var(--text); }
+
+.nav-social {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: 0.5rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--border);
+}
+
+.nav-social a {
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  font-size: 0;
+}
+
+.nav-social a:hover { color: var(--text); }
+
+.nav-social svg {
+  width: 15px;
+  height: 15px;
+}
+
+.copyright {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
 
 main {
   max-width: var(--max);
@@ -69,6 +98,16 @@ footer {
   border-top: 1px solid var(--border);
   font-size: 0.82rem;
   color: var(--muted);
+  text-align: center;
+}
+
+footer a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: var(--text);
 }
 
 /* Index page */
@@ -205,22 +244,6 @@ footer {
   margin: 2.5em 0;
 }
 
-/* About / Work pages */
-
-.page-header { margin-bottom: 3rem; }
-
-.page-header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.5rem;
-}
-
-.page-header .subtitle {
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
 /* Back link */
 
 .back {
@@ -244,91 +267,106 @@ footer {
   .post-date { font-size: 0.78rem; }
 }
 
-/* ─── Timeline (work.html) ─────────────────────────────────────── */
+/* ─── Archive page ──────────────────────────────────────────────── */
 
-.timeline {
-  margin-top: 2.5rem;
+.archive-year-group {
+  margin-bottom: 2.75rem;
 }
 
-.timeline-entry {
-  padding: 2rem 0;
-  border-top: 1px solid var(--border);
-}
-
-.timeline-entry:last-of-type {
-  border-bottom: 1px solid var(--border);
-}
-
-.timeline-meta {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  margin-bottom: 0.6rem;
-}
-
-.timeline-company {
-  font-weight: 600;
-  font-size: 1rem;
+.archive-year {
+  font-family: var(--sans);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--text);
-}
-
-.timeline-period {
-  font-size: 0.82rem;
-  color: var(--muted);
-  letter-spacing: 0.02em;
-}
-
-.timeline-summary {
-  margin: 0 0 1rem 0;
-  color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.65;
-  max-width: 52ch;
-}
-
-.timeline-links {
-  list-style: none;
-  padding: 0;
   margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.timeline-links a {
-  font-size: 0.9rem;
-  color: var(--text);
-  text-decoration: none;
-  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.timeline-links a:hover {
-  color: var(--accent);
-}
-
-.post-link-coming {
-  opacity: 0.45;
-  cursor: default;
-  pointer-events: none;
-}
-
-.coming-soon {
-  font-size: 0.72rem;
+.archive-year-icon {
+  width: 16px;
+  height: 16px;
   color: var(--muted);
-  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.archive-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.archive-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.archive-item-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.archive-icon {
+  width: 13px;
+  height: 13px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.archive-list a {
+  font-size: 0.9rem;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.archive-list a:hover {
+  color: var(--muted);
+}
+
+.archive-date {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.archive-clock-icon {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+
+.archive-item-coming {
+  opacity: 0.45;
+}
+
+.coming-tag {
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   border: 1px solid var(--border);
-  padding: 0.1em 0.45em;
+  padding: 0.1em 0.4em;
   border-radius: 3px;
-}
-
-.timeline-footer {
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  font-size: 0.85rem;
-  color: var(--muted);
+  flex-shrink: 0;
+  margin-left: 0.25rem;
 }
 
 /* ─── Homepage ─────────────────────────────────────────────────── */
@@ -339,21 +377,21 @@ footer {
   border-bottom: 1px solid var(--border);
 }
 
-.home-contact {
-  font-family: var(--sans);
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-top: 1.5rem;
+.profile {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
 }
 
-.home-contact a {
-  color: var(--muted);
-  text-decoration: none;
+.profile-photo {
+  display: block;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: left center;
 }
 
-.home-contact a:hover {
-  color: var(--text);
-}
 
 /* ─── Post list with hook lines ─────────────────────────────────── */
 
