@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The problem was never the data. It was the knowledge.</title>
+  <meta name="description" content="A database is built by engineers, for engineers. Living inside a client's data every day taught me something about analytics work I hadn't expected.">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="canonical" href="https://sravanturbo.github.io/posts/the-problem-was-never-the-data.html">
+</head>
+<body>
+
+<script src="/js/header.js"></script>
+
+<main>
+  <a class="back" href="/archive.html">Archive</a>
+
+  <div class="post-header">
+    <h1>The problem was never the data. It was the knowledge.</h1>
+    <div class="post-meta">
+      <span>2025</span>
+    </div>
+  </div>
+
+  <div class="prose">
+
+    <p>
+      Two months into building a B2B analytics SaaS, I was living as my first client's analytics team. Every question their stakeholders asked came to me. Every chart, every breakdown, every number — I figured it out.
+    </p>
+
+    <p>
+      That meant living inside their database every day. And that taught me something about analytics work that I had not expected.
+    </p>
+
+    <p>
+      A database is built by engineers, for engineers. You open the orders table and find a column called amount — only to discover it was deprecated last quarter. The actual value is in amount_2. Nobody documented this. You find out by asking. Then you find something else. Then something else. Every day inside a client's data brought a new surprise, and every surprise required going back to the engineering team to understand why something was built the way it was.
+    </p>
+
+    <p>
+      The queries were their own problem too. To answer one business question — revenue by channel last month — you write a long query with multiple joins, conditions for edge cases specific to how this company's data is structured. The next question needs a different query. Then another. None of them reusable. And when the data model changes — a new table, a renamed column, a deprecated field — every query you wrote before either breaks silently or gives you the wrong answer.
+    </p>
+
+    <p>
+      When an analyst leaves a company, they leave behind a folder of queries. But queries without context are useless. Which ones are still valid? Which fields have changed since they were written? What did this join actually mean? A new analyst walks in and starts over. Not because the data is gone — the data is all there. But because the knowledge of the data is gone. And unlike code, which is versioned and readable, analytical knowledge lives in people's heads and disappears when they leave.
+    </p>
+
+    <p>
+      That was the real problem. Not the data. The knowledge of the data.
+    </p>
+
+    <p>
+      I started researching whether this problem had a name. It did. A semantic layer is a layer that sits on top of the data and encodes what it means — in that specific company's language. What revenue means here. What an active user means here. How the tables relate. Defined once, versioned like code, updatable as the data model evolves. When someone leaves, the knowledge stays.
+    </p>
+
+    <p>
+      Once we built this for our clients, it changed how everyone worked with the data. That story is for the next post.
+    </p>
+
+  </div>
+</main>
+
+<script src="/js/footer.js"></script>
+
+</body>
+</html>
