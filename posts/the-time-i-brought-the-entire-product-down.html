@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The time I brought the entire product down.</title>
+  <meta name="description" content="A sitemap submission, a cache that had never seen the traffic, and a connection pool nobody had ever configured — and the whole thing fell over.">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="canonical" href="https://sravanturbo.github.io/posts/the-time-i-brought-the-entire-product-down.html">
+</head>
+<body>
+
+<script src="/js/header.js"></script>
+
+<main>
+  <a class="back" href="/archive.html">Archive</a>
+
+  <div class="post-header">
+    <h1>The time I brought the entire product down.</h1>
+    <div class="post-meta">
+      <span>2020</span>
+    </div>
+  </div>
+
+  <div class="prose">
+
+    <p>
+      We had built something good. Tens of thousands of questions, answers pulled straight from what our students were already asking, a content platform that should have been printing search traffic. And it wasn't. Only a handful of pages ever got found. The rest just sat there.
+    </p>
+
+    <p>
+      I was heads down building, moving fast, not thinking about search at all. It was the product team who came to me with the answer. We had never told Google the pages existed. No sitemap submitted. All that content, invisible to the one thing that was supposed to find it.
+    </p>
+
+    <p>
+      So we submitted it. Every URL, all at once.
+    </p>
+
+    <p>
+      I expected Google to ease into it. A few hundred pages a day, building up slowly, the way I would have done it if I were writing the crawler myself. That is not what happened. The crawler came in hard, checking the whole site's health in one pass, hitting pages that had never been requested by a real person before. A wall of traffic, all of it landing within minutes, aimed almost entirely at pages our caches had never seen.
+    </p>
+
+    <p>
+      That last part is the whole story. A cache only helps once something has been asked for. Every one of those pages was being asked for the first time, by a bot, all at once. Nothing to serve from cache. Every request went straight through to the database.
+    </p>
+
+    <p>
+      We had planned for this, or thought we had. A dedicated database replica just for our service, so a spike on our end would never touch anyone else. It didn't matter. The main database went down. Not our replica. The one every other team depended on.
+    </p>
+
+    <p>
+      I did not understand why, and for a long stretch, I could not even get a grip on the shape of the confusion enough to ask the right question. If the traffic was ours, and our replica was separate, how was the shared database the one that fell over. Request counts said nothing was that unusual. Query load said the same. Memory and CPU on our own servers looked ordinary. Every graph I knew to check told me the story I already believed — that we were isolated, that this could not be us — while the outage sitting in front of me said otherwise. I went back to logs I had already read, checked things I had already checked, because I did not have a next place to look. It was only when I gave up on request-shaped explanations entirely and pulled up something I almost never looked at, raw connection counts to the database, that the graph lined up, exactly, with the minute the spike hit. Every server we ran had been quietly opening far more connections than it needed, because nobody had ever told it how many to open. It had just been using whatever the default was. A handful of new servers spinning up during the spike was enough, at that default, to use up every connection the shared database had to give.
+    </p>
+
+    <p>
+      The traffic never should have reached the database at all. That was the caching's job. But caching only protects you from requests it has already seen, and a sitemap submission guarantees every request it triggers is new.
+    </p>
+
+    <p>
+      That fix was small once I found it. Set the pool size on purpose. Warm the pages before the crawler finds them, not after. What stayed with me was something else. I had built real isolation for our service, a separate replica, dedicated servers, and none of it mattered, because the thing that actually broke was one layer beneath all of it, in a setting nobody had ever bothered to name.
+    </p>
+
+    <p>
+      It would not be the last time a fix I was sure about turned out to be protecting the wrong layer.
+    </p>
+
+  </div>
+</main>
+
+<script src="/js/footer.js"></script>
+
+</body>
+</html>
