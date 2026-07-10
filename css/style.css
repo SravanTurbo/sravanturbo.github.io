@@ -150,16 +150,29 @@ footer a:hover {
 .post-link:hover { text-decoration: underline; }
 
 .post-tag {
-  font-size: 0.68rem;
-  color: var(--muted);
-  letter-spacing: 0.05em;
+  display: inline-block;
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  border: 1px solid var(--border);
-  padding: 0.1em 0.4em;
+  padding: 0.15em 0.5em;
   border-radius: 3px;
-  flex-shrink: 0;
-  margin-left: 0.25rem;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  line-height: 1.6;
 }
+
+.post-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.post-tag[data-tag="startup-series"] { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+.post-tag[data-tag="technical"]      { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.post-tag[data-tag="leadership"]     { background: #faf5ff; color: #7e22ce; border-color: #e9d5ff; }
+.post-tag[data-tag="number"]         { background: #f8fafc; color: #475569; border-color: #cbd5e1; }
 
 /* Post page */
 
@@ -317,9 +330,21 @@ footer a:hover {
 
 .archive-item-title {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.archive-item-title-row {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
+}
+
+.archive-item-title .post-tags {
+  margin: 0;
 }
 
 .archive-icon {
