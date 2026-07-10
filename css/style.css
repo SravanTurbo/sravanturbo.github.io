@@ -150,9 +150,15 @@ footer a:hover {
 .post-link:hover { text-decoration: underline; }
 
 .post-tag {
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   color: var(--muted);
-  margin-left: 0.5rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-left: 0.25rem;
 }
 
 /* Post page */
