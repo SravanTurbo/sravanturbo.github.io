@@ -164,6 +164,7 @@ footer a:hover {
 
 .post-tags {
   display: inline-flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.35rem;
   margin: 0;
@@ -361,6 +362,10 @@ code {
   opacity: 0.45;
 }
 
+.archive-item-coming .archive-item-title-row > span:first-of-type {
+  font-size: 0.9rem;
+}
+
 .coming-tag {
   font-size: 0.68rem;
   color: var(--muted);
@@ -407,7 +412,7 @@ code {
 
 .post-title-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
