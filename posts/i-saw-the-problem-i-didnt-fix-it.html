@@ -31,45 +31,32 @@
   <div class="prose">
 
     <p>
-      When we onboarded the first client, I could already see that querying large datasets was going to be slow. Not a guess, a certainty. The data volumes were there, the query patterns were clear. Slowness was coming.
+      When we started building for our second client, I already knew the way I was working wasn't going to hold. Every new chart, every new layout, I was hand coding it into place. I could feel the shape of the problem forming. This is not going to scale.
     </p>
-
+    
     <p>
-      I noted it and moved on.
+      I kept going anyway.
     </p>
-
+    
     <p>
-      We had bigger problems that week. The semantic layer wasn't fully modeled. The dashboards were basic. Clients weren't using the product heavily enough for slowness to matter yet. Fixing a problem that wasn't hurting anyone would have meant not fixing a problem that was.
+      There was a client waiting and a product to prove. Stopping to build the reusable version would have meant guessing at a structure I hadn't earned yet. I didn't have enough clients to know what actually needed to be reusable and what just looked that way from one data point.
     </p>
-
+    
     <p>
-      Months later, clients were using the dashboards daily. Going back in time, slicing across dimensions, selecting bigger ranges. The queries got slow. Clients could feel it. We could feel it. Now the problem was loud.
+      By the third client, the tax was undeniable. Every onboarding meant stopping everything to write new code for the same kind of problem I'd already solved twice. The pattern was no longer a guess. It was showing up every single time.
     </p>
-
+    
     <p>
-      Only then did I act. Pre-aggregation turned ten thousand records into a hundred, every query into a lookup instead of a scan.
+      Only then did I sit down and design the entity system. Dashboards, sections, charts, filters, all built once and reused everywhere. What used to take days of hand coding became configuration.
     </p>
-
+    
     <p>
-      The same thing happened with the dashboards.
+      I could have built this the first time. I saw it coming. But I think seeing a problem early is different from knowing what it actually needs. The first two clients told me the problem was real. The third told me the shape of the solution. If I'd built it after client one, I'd have built it wrong, for a version of the problem that didn't exist yet.
     </p>
-
+    
     <p>
-      When we started building for our second client, I already knew the way I was working wasn't going to hold. Every new chart, every new layout, I was hand coding it into place, and I could feel the shape of the problem forming. <em>This is not going to scale.</em> I kept going anyway. There was a client waiting and a product to prove. Building the reusable version first would have meant guessing at a structure I hadn't earned yet.
+      The harder discipline isn't spotting problems. It's knowing which ones are worth stopping for, and how far to solve them.
     </p>
-
-    <p>
-      By the third client, the tax was undeniable. Every onboarding meant stopping everything to write new code for the same kind of problem I'd already solved twice. Only then did I sit down and design the entity system — dashboards, sections, charts, filters, all built once and reused everywhere.
-    </p>
-
-    <p>
-      I used to think seeing a problem early meant I had to fix it early. Now I think early is just early. A problem you can see but nobody feels yet is still a guess about how it should be solved. Waiting isn't avoidance. It's letting the problem tell you what it actually needs, instead of what you assume it needs the moment you notice it.
-    </p>
-
-    <p>
-      The harder discipline isn't spotting problems. It's knowing which ones are worth stopping for.
-    </p>
-
   </div>
 </main>
 
